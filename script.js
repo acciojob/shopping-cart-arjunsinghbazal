@@ -1,22 +1,21 @@
 //your code here
-// This is the boilerplate code given for you
-// You can modify this code
-// Product data
-const products = [
-  { id: 1, name: "Product 1", price: 10 },
-  { id: 2, name: "Product 2", price: 20 },
-  { id: 3, name: "Product 3", price: 30 },
-  { id: 4, name: "Product 4", price: 40 },
-  { id: 5, name: "Product 5", price: 50 },
-];
+// Get references to HTML elements
+const cartItemsList = document.getElementById("cart-items");
+const clearCartButton = document.getElementById("clear-cart");
 
-// DOM elements
-const productList = document.getElementById("product-list");
+// Load items from Local Storage when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+    loadCartItems();
+});
 
-// Render product list
-function renderProducts() {
-  products.forEach((product) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${product.name} - $${product.price} <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
-    productList.appendChild(li);
-  });
+// Function to load cart items from Local Storage
+function loadCartItems() {
+    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Clear the cart items list
+    cartItemsList.innerHTML = "";
+
+    // Display each item in the cart
+    cartItems.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} - $${item.price}`;
