@@ -1,82 +1,43 @@
-// This is the boilerplate code given for you
-// You can modify this code
-// Product data
-const products = [
-  { id: 1, name: "Product 1", price: 10 },
-  { id: 2, name: "Product 2", price: 20 },
-  { id: 3, name: "Product 3", price: 30 },
-  { id: 4, name: "Product 4", price: 40 },
-  { id: 5, name: "Product 5", price: 50 },
-];
+// Constants for DOM elements
+const itemNameInput = document.getElementById("item-name-input");
+const itemPriceInput = document.getElementById("item-price-input");
+const addButton = document.getElementById("add");
+const shoppingList = document.getElementById("shopping-list").getElementsByTagName("tbody")[0];
+const totalElement = document.getElementById("total");
 
-// DOM elements
-const productList = document.getElementById("product-list");
-const cartList = document.getElementById("cart-list");
-const clearCartBtn = document.getElementById("clear-cart-btn");
+// Initialize the grand total
+let grandTotal = 0;
 
-// Get cart data from session storage or initialize it
-let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+// Function to add an item to the shopping list
+function addItem() {
+  const itemName = itemNameInput.value.trim();
+  const itemPrice = parseFloat(itemPriceInput.value);
 
-// Render product list
-function renderProducts() {
-  products.forEach((product) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${product.name} - $${product.price} <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
-    productList.appendChild(li);
-  });
-}
-
-// Render cart list
-function renderCart() {
-  cartList.innerHTML = "";
-  cart.forEach((cartItem) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${cartItem.name} - $${cartItem.price} <button class="remove-from-cart-btn" data-id="${cartItem.id}">Remove from Cart</button>`;
-    cartList.appendChild(li);
-  });
-}
-
-// Add item to cart
-function addToCart(productId) {
-  const productToAdd = products.find((product) => product.id === productId);
-  if (productToAdd) {
-    cart.push(productToAdd);
-    sessionStorage.setItem("cart", JSON.stringify(cart));
-    renderCart();
+  // Validate input
+  if (itemName === "" || isNaN(itemPrice) || itemPrice <= 0) {
+    alert("Please enter a valid item name and price.");
+    return;
   }
+
+  // Create a new row in the table
+  const newRow = shoppingList.insertRow();
+  const itemCell = newRow.insertCell(0);
+  const priceCell = newRow.insertCell(1);
+
+  // Set the item and price for the new row
+  itemCell.textContent = itemName;
+  priceCell.textContent = "$" + itemPrice.toFixed(2);
+
+  // Update the grand total
+  grandTotal += itemPrice;
+
+  // Clear input fields
+  itemNameInput.value = "";
+  itemPriceInput.value = "";
+
+  // Update the total element
+  totalElement.textContent = "Grand Total: $" + grandTotal.toFixed(2);
 }
 
-// Remove item from cart
-function removeFromCart(productId) {
-  cart = cart.filter((cartItem) => cartItem.id !== productId);
-  sessionStorage.setItem("cart", JSON.stringify(cart));
-  renderCart();
-}
-
-// Clear cart
-function clearCart() {
-  cart = [];
-  sessionStorage.removeItem("cart");
-  renderCart();
-}
-
-// Event listeners
-productList.addEventListener("click", (event) => {
-  if (event.target.classList.contains("add-to-cart-btn")) {
-    const productId = parseInt(event.target.getAttribute("data-id"));
-    addToCart(productId);
-  }
-});
-
-cartList.addEventListener("click", (event) => {
-  if (event.target.classList.contains("remove-from-cart-btn")) {
-    const productId = parseInt(event.target.getAttribute("data-id"));
-    removeFromCart(productId);
-  }
-});
-
-clearCartBtn.addEventListener("click", clearCart);
-
-// Initial render
-renderProducts();
-renderCart();
+// Add click event listener to the "Add" button
+addButton.addEventListener("click", addItem);
